@@ -55,6 +55,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Font fallback: Roboto for English, Prompt for Thai */
+    /* Browser automatically selects font based on character unicode range */
+    font-family: var(--font-roboto), var(--font-prompt), 'Roboto', 'Prompt', sans-serif;
   }
 }
 

@@ -5,7 +5,7 @@ export function PersonaShowcase() {
   return (
     <section className="py-16 px-4">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-4xl font-bold text-center mb-4">
+        <h2 className="text-4xl font-semibold text-center mb-4">
           ตัวอย่างฉายาที่คุณอาจได้รับ
         </h2>
         <p className="text-center text-gray-600 mb-12 text-lg">

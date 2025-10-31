@@ -1,4 +1,7 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
+import { SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 
 export function HeroSection() {
@@ -28,11 +31,20 @@ export function HeroSection() {
 
         {/* CTA Button */}
         <div className="pt-8">
-          <Link href="/dashboard">
-            <Button size="lg" className="text-lg px-8 py-6 h-auto">
-              🚀 เริ่มต้น 7-Day Challenge
-            </Button>
-          </Link>
+          <SignedOut>
+            <SignInButton mode="modal">
+              <Button size="lg" className="text-lg px-8 py-6 h-auto">
+                🚀 เริ่มต้น 7-Day Challenge
+              </Button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <Link href="/dashboard">
+              <Button size="lg" className="text-lg px-8 py-6 h-auto">
+                🚀 เริ่มต้น 7-Day Challenge
+              </Button>
+            </Link>
+          </SignedIn>
         </div>
       </div>
     </section>

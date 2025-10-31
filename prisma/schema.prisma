@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String      @id @default(cuid())
+  clerkId    String      @unique
+  email      String      @unique
+  name       String?
+  imageUrl   String?
+  challenges Challenge[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@map("users")
+}
+
+model Challenge {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startDate DateTime
+  endDate   DateTime
+  status    Status   @default(ACTIVE)
+  meals     Meal[]
+  persona   Persona?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("challenges")
+}
+
+enum Status {
+  ACTIVE
+  COMPLETED
+  ABANDONED
+
+  @@map("status")
+}
+
+model Meal {
+  id          String    @id @default(cuid())
+  challengeId String
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  imageUrl    String
+  mealTime    DateTime
+  dayNumber   Int
+  notes       String?
+  tags        MealTag[]
+  createdAt   DateTime  @default(now())
+
+  @@map("meals")
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  category Category
+  emoji    String
+  color    String
+  meals    MealTag[]
+
+  @@map("tags")
+}
+
+enum Category {
+  COOKING_METHOD
+  FOOD_GROUP
+  TASTE
+  BEVERAGE
+
+  @@map("category")
+}
+
+model MealTag {
+  id     String @id @default(cuid())
+  mealId String
+  meal   Meal   @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  tagId  String
+  tag    Tag    @relation(fields: [tagId], references: [id])
+
+  @@unique([mealId, tagId])
+  @@map("meal_tags")
+}
+
+model Persona {
+  id           String    @id @default(cuid())
+  challengeId  String    @unique
+  challenge    Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  title        String
+  description  String
+  statsJson    Json
+  aiInsight    String?
+  cardImageUrl String?
+  createdAt    DateTime  @default(now())
+
+  @@map("personas")
+}
+
