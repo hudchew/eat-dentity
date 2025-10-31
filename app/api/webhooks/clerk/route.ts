@@ -12,6 +12,11 @@ export async function POST(req: Request) {
 
   // If there are no headers, error out
   if (!svix_id || !svix_timestamp || !svix_signature) {
+    console.error("❌ Missing svix headers:", {
+      has_svix_id: !!svix_id,
+      has_svix_timestamp: !!svix_timestamp,
+      has_svix_signature: !!svix_signature,
+    });
     return new Response("Error: Missing svix headers", {
       status: 400,
     });
@@ -24,6 +29,7 @@ export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
   if (!WEBHOOK_SECRET) {
+    console.error("❌ Missing CLERK_WEBHOOK_SECRET environment variable");
     return new Response("Error: Missing CLERK_WEBHOOK_SECRET", {
       status: 400,
     });
@@ -41,9 +47,14 @@ export async function POST(req: Request) {
       "svix-timestamp": svix_timestamp,
       "svix-signature": svix_signature,
     }) as WebhookEvent;
-  } catch (err) {
-    console.error("Error verifying webhook:", err);
-    return new Response("Error: Verification failed", {
+    console.log(`✅ Webhook verified: ${evt.type}`);
+  } catch (err: any) {
+    console.error("❌ Webhook verification failed:", {
+      error: err?.message || err,
+      has_secret: !!WEBHOOK_SECRET,
+      secret_length: WEBHOOK_SECRET?.length || 0,
+    });
+    return new Response(`Error: Verification failed - ${err?.message || "Unknown error"}`, {
       status: 400,
     });
   }
@@ -64,8 +75,13 @@ export async function POST(req: Request) {
       )?.email_address || email_addresses?.[0]?.email_address || null;
 
       if (!primaryEmail) {
-        console.error(`❌ No email address for user ${id}`);
-        return new Response("Error: No email address", { status: 400 });
+        console.error(`❌ No email address for user ${id}`, {
+          email_addresses: email_addresses,
+          primary_email_address_id: primaryEmailId,
+        });
+        // Return 200 OK instead of 400 to prevent infinite retries
+        // User will be created later when email is available via user.updated event
+        return new Response("Warning: No email address", { status: 200 });
       }
 
       await prisma.user.create({
