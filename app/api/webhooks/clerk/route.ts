@@ -57,17 +57,30 @@ export async function POST(req: Request) {
 
     // Sync user to database
     try {
+      // Get primary email address (handle empty email_addresses array)
+      const primaryEmailId = evt.data.primary_email_address_id;
+      const primaryEmail = email_addresses?.find(
+        (email: any) => email.id === primaryEmailId
+      )?.email_address || email_addresses?.[0]?.email_address || null;
+
+      if (!primaryEmail) {
+        console.error(`❌ No email address for user ${id}`);
+        return new Response("Error: No email address", { status: 400 });
+      }
+
       await prisma.user.create({
         data: {
           clerkId: id,
-          email: email_addresses[0]?.email_address || "",
+          email: primaryEmail,
           name: first_name && last_name ? `${first_name} ${last_name}` : first_name || last_name || null,
           imageUrl: image_url || null,
         },
       });
-      console.log(`✅ User synced to database: ${id}`);
-    } catch (error) {
+      console.log(`✅ User synced to database: ${id} - ${primaryEmail}`);
+    } catch (error: any) {
       console.error("Error syncing user to database:", error);
+      // Return 500 to Clerk so it retries
+      return new Response(`Error: ${error.message}`, { status: 500 });
     }
   }
 
@@ -76,17 +89,29 @@ export async function POST(req: Request) {
 
     // Update user in database
     try {
+      // Get primary email address (handle empty email_addresses array)
+      const primaryEmailId = evt.data.primary_email_address_id;
+      const primaryEmail = email_addresses?.find(
+        (email: any) => email.id === primaryEmailId
+      )?.email_address || email_addresses?.[0]?.email_address || null;
+
+      if (!primaryEmail) {
+        console.error(`❌ No email address for user ${id}`);
+        return new Response("Error: No email address", { status: 400 });
+      }
+
       await prisma.user.update({
         where: { clerkId: id },
         data: {
-          email: email_addresses[0]?.email_address || "",
+          email: primaryEmail,
           name: first_name && last_name ? `${first_name} ${last_name}` : first_name || last_name || null,
           imageUrl: image_url || null,
         },
       });
-      console.log(`✅ User updated in database: ${id}`);
-    } catch (error) {
+      console.log(`✅ User updated in database: ${id} - ${primaryEmail}`);
+    } catch (error: any) {
       console.error("Error updating user in database:", error);
+      return new Response(`Error: ${error.message}`, { status: 500 });
     }
   }
 
