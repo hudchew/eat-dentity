@@ -106,3 +106,52 @@ model Persona {
   @@map("personas")
 }
 
+// ==================== ADMIN SYSTEM ====================
+
+model Admin {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String // bcrypt hashed
+  name      String
+  isActive  Boolean   @default(true)
+  lastLogin DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  sessions   AdminSession[]
+  activities AdminActivity[]
+
+  @@map("admins")
+}
+
+model AdminSession {
+  id        String   @id @default(cuid())
+  adminId   String
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([adminId])
+  @@index([token])
+  @@index([expiresAt])
+  @@map("admin_sessions")
+}
+
+model AdminActivity {
+  id         String   @id @default(cuid())
+  adminId    String
+  admin      Admin    @relation(fields: [adminId], references: [id])
+  action     String // CREATE, UPDATE, DELETE, VIEW, EXPORT
+  entityType String // User, Challenge, Meal, Persona, Tag
+  entityId   String?
+  details    Json? // Additional data (before/after changes)
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([adminId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("admin_activities")
+}
