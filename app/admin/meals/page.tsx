@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export default async function AdminMealsPage({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     search?: string;
     challenge?: string;
@@ -17,7 +17,7 @@ export default async function AdminMealsPage({
     from?: string;
     to?: string;
     view?: 'grid' | 'table';
-  };
+  }>;
 }) {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('admin_session')?.value;
@@ -31,12 +31,13 @@ export default async function AdminMealsPage({
     redirect('/admin/login');
   }
 
-  const page = parseInt(searchParams.page || '1');
-  const search = searchParams.search || '';
-  const challengeFilter = searchParams.challenge || 'ALL';
-  const userFilter = searchParams.user || 'ALL';
-  const dateFrom = searchParams.from || '';
-  const dateTo = searchParams.to || '';
+  const params = await searchParams;
+  const page = parseInt(params.page || '1');
+  const search = params.search || '';
+  const challengeFilter = params.challenge || 'ALL';
+  const userFilter = params.user || 'ALL';
+  const dateFrom = params.from || '';
+  const dateTo = params.to || '';
   const pageSize = 20;
   const skip = (page - 1) * pageSize;
 

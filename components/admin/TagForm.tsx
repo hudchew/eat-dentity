@@ -259,7 +259,7 @@ export function TagForm({ tag, mode }: TagFormProps) {
                 type="button"
                 variant="destructive"
                 onClick={handleDelete}
-                disabled={isDeleting || tag?._count.meals > 0}
+                disabled={isDeleting || (tag?._count?.meals ?? 0) > 0}
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 {isDeleting ? 'Deleting...' : 'Delete'}

@@ -20,7 +20,7 @@ const updateTagSchema = z.object({
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession(req);
@@ -32,8 +32,9 @@ export async function GET(
       );
     }
 
+    const { id } = await params;
     const tag = await prisma.tag.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: {
@@ -66,7 +67,7 @@ export async function GET(
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession(req);
@@ -83,14 +84,16 @@ export async function PATCH(
 
     if (!validated.success) {
       return NextResponse.json(
-        { error: 'Invalid input', details: validated.error.errors },
+        { error: 'Invalid input', details: validated.error.issues },
         { status: 400 }
       );
     }
 
+    const { id } = await params;
+
     // Check if tag exists
     const existingTag = await prisma.tag.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingTag) {
@@ -104,7 +107,7 @@ export async function PATCH(
     if (validated.data.name || validated.data.slug) {
       const conflicting = await prisma.tag.findFirst({
         where: {
-          id: { not: params.id },
+          id: { not: id },
           OR: [
             ...(validated.data.name ? [{ name: validated.data.name }] : []),
             ...(validated.data.slug ? [{ slug: validated.data.slug }] : []),
@@ -145,7 +148,7 @@ export async function PATCH(
 
     // Update tag
     const updatedTag = await prisma.tag.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
     });
 
@@ -154,7 +157,7 @@ export async function PATCH(
       adminId: session.admin!.id,
       action: 'UPDATE',
       entityType: 'Tag',
-      entityId: params.id,
+      entityId: id,
       details: {
         before: {
           name: existingTag.name,
@@ -190,7 +193,7 @@ export async function PATCH(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession(req);
@@ -202,9 +205,11 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
+
     // Check if tag exists and get usage count
     const tag = await prisma.tag.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: {
@@ -234,7 +239,7 @@ export async function DELETE(
 
     // Delete tag
     await prisma.tag.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     // Log activity
@@ -242,7 +247,7 @@ export async function DELETE(
       adminId: session.admin!.id,
       action: 'DELETE',
       entityType: 'Tag',
-      entityId: params.id,
+      entityId: id,
       details: {
         deletedTag: {
           name: tag.name,

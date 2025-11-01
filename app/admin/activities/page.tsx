@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 export default async function AdminActivitiesPage({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     search?: string;
     admin?: string;
@@ -18,7 +18,7 @@ export default async function AdminActivitiesPage({
     action?: string;
     from?: string;
     to?: string;
-  };
+  }>;
 }) {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('admin_session')?.value;
@@ -32,13 +32,14 @@ export default async function AdminActivitiesPage({
     redirect('/admin/login');
   }
 
-  const page = parseInt(searchParams.page || '1');
-  const search = searchParams.search || '';
-  const adminFilter = searchParams.admin || 'ALL';
-  const entityTypeFilter = searchParams.entityType || 'ALL';
-  const actionFilter = searchParams.action || 'ALL';
-  const dateFrom = searchParams.from || '';
-  const dateTo = searchParams.to || '';
+  const params = await searchParams;
+  const page = parseInt(params.page || '1');
+  const search = params.search || '';
+  const adminFilter = params.admin || 'ALL';
+  const entityTypeFilter = params.entityType || 'ALL';
+  const actionFilter = params.action || 'ALL';
+  const dateFrom = params.from || '';
+  const dateTo = params.to || '';
   const pageSize = 50; // More activities per page
   const skip = (page - 1) * pageSize;
 

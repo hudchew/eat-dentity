@@ -8,7 +8,7 @@ import { z } from 'zod';
 const updatePersonaSchema = z.object({
   title: z.string().min(1, 'Title is required').optional(),
   description: z.string().min(1, 'Description is required').optional(),
-  statsJson: z.record(z.any()).optional(),
+  statsJson: z.record(z.string(), z.any()).optional(),
 });
 
 /**
@@ -17,7 +17,7 @@ const updatePersonaSchema = z.object({
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession(req);
@@ -29,8 +29,9 @@ export async function GET(
       );
     }
 
+    const { id } = await params;
     const persona = await prisma.persona.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         challenge: {
           include: {
@@ -63,7 +64,7 @@ export async function GET(
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession(req);
@@ -80,14 +81,16 @@ export async function PATCH(
 
     if (!validated.success) {
       return NextResponse.json(
-        { error: 'Invalid input', details: validated.error.errors },
+        { error: 'Invalid input', details: validated.error.issues },
         { status: 400 }
       );
     }
 
+    const { id } = await params;
+
     // Check if persona exists
     const existingPersona = await prisma.persona.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingPersona) {
@@ -114,7 +117,7 @@ export async function PATCH(
 
     // Update persona
     const updatedPersona = await prisma.persona.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
     });
 
@@ -123,7 +126,7 @@ export async function PATCH(
       adminId: session.admin!.id,
       action: 'UPDATE',
       entityType: 'Persona',
-      entityId: params.id,
+      entityId: id,
       details: {
         before: {
           title: existingPersona.title,
@@ -157,7 +160,7 @@ export async function PATCH(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession(req);
@@ -169,9 +172,11 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
+
     // Check if persona exists
     const persona = await prisma.persona.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!persona) {
@@ -183,7 +188,7 @@ export async function DELETE(
 
     // Delete persona
     await prisma.persona.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     // Log activity
@@ -191,7 +196,7 @@ export async function DELETE(
       adminId: session.admin!.id,
       action: 'DELETE',
       entityType: 'Persona',
-      entityId: params.id,
+      entityId: id,
       details: {
         deletedPersona: {
           id: persona.id,

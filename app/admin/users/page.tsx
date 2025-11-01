@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams: { page?: string; search?: string };
+  searchParams: Promise<{ page?: string; search?: string }>;
 }) {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('admin_session')?.value;
@@ -23,8 +23,9 @@ export default async function AdminUsersPage({
     redirect('/admin/login');
   }
 
-  const page = parseInt(searchParams.page || '1');
-  const search = searchParams.search || '';
+  const params = await searchParams;
+  const page = parseInt(params.page || '1');
+  const search = params.search || '';
   const pageSize = 20;
   const skip = (page - 1) * pageSize;
 

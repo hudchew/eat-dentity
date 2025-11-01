@@ -9,13 +9,13 @@ export const dynamic = 'force-dynamic';
 export default async function AdminPersonasPage({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     search?: string;
     user?: string;
     from?: string;
     to?: string;
-  };
+  }>;
 }) {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('admin_session')?.value;
@@ -29,11 +29,12 @@ export default async function AdminPersonasPage({
     redirect('/admin/login');
   }
 
-  const page = parseInt(searchParams.page || '1');
-  const search = searchParams.search || '';
-  const userFilter = searchParams.user || 'ALL';
-  const dateFrom = searchParams.from || '';
-  const dateTo = searchParams.to || '';
+  const params = await searchParams;
+  const page = parseInt(params.page || '1');
+  const search = params.search || '';
+  const userFilter = params.user || 'ALL';
+  const dateFrom = params.from || '';
+  const dateTo = params.to || '';
   const pageSize = 20;
   const skip = (page - 1) * pageSize;
 

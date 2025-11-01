@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     if (!validated.success) {
       return NextResponse.json(
-        { error: 'Invalid input', details: validated.error.errors },
+        { error: 'Invalid input', details: validated.error.issues },
         { status: 400 }
       );
     }
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
       adminId: session.admin!.id,
       action: 'DELETE',
       entityType: 'Meal',
-      entityId: null, // Bulk operation
+      entityId: undefined, // Bulk operation
       details: {
         bulkDelete: {
           count: deleteResult.count,

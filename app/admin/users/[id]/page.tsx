@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export default async function AdminUserDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('admin_session')?.value;
@@ -26,9 +26,11 @@ export default async function AdminUserDetailsPage({
     redirect('/admin/login');
   }
 
+  const { id } = await params;
+
   // Get user with related data
   const user = await prisma.user.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       challenges: {
         include: {

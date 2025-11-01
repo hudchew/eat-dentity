@@ -10,7 +10,7 @@ import { generatePersonaInsight } from '@/lib/gemini';
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession(req);
@@ -22,9 +22,11 @@ export async function POST(
       );
     }
 
+    const { id } = await params;
+
     // Check if persona exists
     const persona = await prisma.persona.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!persona) {
@@ -51,7 +53,7 @@ export async function POST(
 
     // Update persona with new insight
     const updatedPersona = await prisma.persona.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         aiInsight,
       },
@@ -62,7 +64,7 @@ export async function POST(
       adminId: session.admin!.id,
       action: 'UPDATE',
       entityType: 'Persona',
-      entityId: params.id,
+      entityId: id,
       details: {
         action: 'Regenerate AI Insight',
         previousInsight: persona.aiInsight,

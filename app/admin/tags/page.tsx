@@ -10,11 +10,11 @@ export const dynamic = 'force-dynamic';
 export default async function AdminTagsPage({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     search?: string;
     category?: string;
-  };
+  }>;
 }) {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('admin_session')?.value;
@@ -28,9 +28,10 @@ export default async function AdminTagsPage({
     redirect('/admin/login');
   }
 
-  const page = parseInt(searchParams.page || '1');
-  const search = searchParams.search || '';
-  const categoryFilter = searchParams.category || 'ALL';
+  const params = await searchParams;
+  const page = parseInt(params.page || '1');
+  const search = params.search || '';
+  const categoryFilter = params.category || 'ALL';
   const pageSize = 20;
   const skip = (page - 1) * pageSize;
 

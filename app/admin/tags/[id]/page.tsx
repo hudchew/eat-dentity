@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export default async function AdminEditTagPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('admin_session')?.value;
@@ -23,9 +23,11 @@ export default async function AdminEditTagPage({
     redirect('/admin/login');
   }
 
+  const { id } = await params;
+
   // Get tag with usage count
   const tag = await prisma.tag.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       _count: {
         select: {

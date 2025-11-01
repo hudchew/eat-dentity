@@ -18,7 +18,7 @@ const updateChallengeSchema = z.object({
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession(req);
@@ -30,8 +30,9 @@ export async function GET(
       );
     }
 
+    const { id } = await params;
     const challenge = await prisma.challenge.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: true,
         meals: true,
@@ -62,7 +63,7 @@ export async function GET(
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession(req);
@@ -79,14 +80,16 @@ export async function PATCH(
 
     if (!validated.success) {
       return NextResponse.json(
-        { error: 'Invalid input', details: validated.error.errors },
+        { error: 'Invalid input', details: validated.error.issues },
         { status: 400 }
       );
     }
 
+    const { id } = await params;
+
     // Check if challenge exists
     const existingChallenge = await prisma.challenge.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingChallenge) {
@@ -116,7 +119,7 @@ export async function PATCH(
 
     // Update challenge
     const updatedChallenge = await prisma.challenge.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
     });
 
@@ -125,7 +128,7 @@ export async function PATCH(
       adminId: session.admin!.id,
       action: 'UPDATE',
       entityType: 'Challenge',
-      entityId: params.id,
+      entityId: id,
       details: {
         before: {
           status: existingChallenge.status,
@@ -161,7 +164,7 @@ export async function PATCH(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession(req);
@@ -173,9 +176,11 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
+
     // Check if challenge exists
     const challenge = await prisma.challenge.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!challenge) {
@@ -187,7 +192,7 @@ export async function DELETE(
 
     // Delete challenge (cascade deletes meals and persona)
     await prisma.challenge.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     // Log activity
@@ -195,7 +200,7 @@ export async function DELETE(
       adminId: session.admin!.id,
       action: 'DELETE',
       entityType: 'Challenge',
-      entityId: params.id,
+      entityId: id,
       details: {
         deletedChallenge: {
           id: challenge.id,

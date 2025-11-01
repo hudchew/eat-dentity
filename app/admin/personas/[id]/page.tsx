@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export default async function AdminPersonaDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('admin_session')?.value;
@@ -26,9 +26,11 @@ export default async function AdminPersonaDetailsPage({
     redirect('/admin/login');
   }
 
+  const { id } = await params;
+
   // Get persona with all related data
   const persona = await prisma.persona.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       challenge: {
         include: {

@@ -18,7 +18,7 @@ const updateMealSchema = z.object({
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession(req);
@@ -30,8 +30,9 @@ export async function GET(
       );
     }
 
+    const { id } = await params;
     const meal = await prisma.meal.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         challenge: {
           include: {
@@ -75,7 +76,7 @@ export async function GET(
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession(req);
@@ -92,14 +93,16 @@ export async function PATCH(
 
     if (!validated.success) {
       return NextResponse.json(
-        { error: 'Invalid input', details: validated.error.errors },
+        { error: 'Invalid input', details: validated.error.issues },
         { status: 400 }
       );
     }
 
+    const { id } = await params;
+
     // Check if meal exists
     const existingMeal = await prisma.meal.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         tags: true,
       },
@@ -129,7 +132,7 @@ export async function PATCH(
 
     // Update meal
     const updatedMeal = await prisma.meal.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
     });
 
@@ -137,14 +140,14 @@ export async function PATCH(
     if (validated.data.tagIds) {
       // Delete existing meal tags
       await prisma.mealTag.deleteMany({
-        where: { mealId: params.id },
+        where: { mealId: id },
       });
 
       // Create new meal tags
       if (validated.data.tagIds.length > 0) {
         await prisma.mealTag.createMany({
           data: validated.data.tagIds.map((tagId) => ({
-            mealId: params.id,
+            mealId: id,
             tagId,
           })),
         });
@@ -156,7 +159,7 @@ export async function PATCH(
       adminId: session.admin!.id,
       action: 'UPDATE',
       entityType: 'Meal',
-      entityId: params.id,
+      entityId: id,
       details: {
         before: {
           mealTime: existingMeal.mealTime,
@@ -192,7 +195,7 @@ export async function PATCH(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession(req);
@@ -204,9 +207,11 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
+
     // Check if meal exists
     const meal = await prisma.meal.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!meal) {
@@ -218,7 +223,7 @@ export async function DELETE(
 
     // Delete meal (cascade deletes meal tags)
     await prisma.meal.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     // Log activity
@@ -226,7 +231,7 @@ export async function DELETE(
       adminId: session.admin!.id,
       action: 'DELETE',
       entityType: 'Meal',
-      entityId: params.id,
+      entityId: id,
       details: {
         deletedMeal: {
           id: meal.id,
