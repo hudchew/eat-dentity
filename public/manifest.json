@@ -57,13 +57,6 @@
       "purpose": "any"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshots/dashboard.png",
-      "sizes": "540x720",
-      "type": "image/png"
-    }
-  ],
   "categories": ["health", "lifestyle", "food"],
   "lang": "th",
   "dir": "ltr"
