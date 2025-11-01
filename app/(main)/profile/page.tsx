@@ -4,6 +4,8 @@ import { PersonaCollection } from '@/components/features/PersonaCollection';
 import { OverallStats } from '@/components/features/OverallStats';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+export const dynamic = 'force-dynamic';
+
 export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-50 p-4 md:p-8">

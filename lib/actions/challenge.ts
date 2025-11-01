@@ -19,6 +19,9 @@ export async function startChallenge() {
 
   // Get or create user in database
   const user = await getOrCreateUser();
+  if (!user) {
+    throw new Error('Unable to create user. Please try signing in again.');
+  }
 
   // Check if user has an active challenge
   const activeChallenge = await prisma.challenge.findFirst({
@@ -65,6 +68,9 @@ export async function getActiveChallenge() {
   let user;
   try {
     user = await getOrCreateUser();
+    if (!user) {
+      return null;
+    }
   } catch {
     // If user creation fails, return null (will show start challenge button)
     return null;
@@ -114,6 +120,9 @@ export async function saveMeal(
 
   // Get or create user in database
   const user = await getOrCreateUser();
+  if (!user) {
+    throw new Error('Unable to create user. Please try signing in again.');
+  }
 
   // Get active challenge
   const challenge = await prisma.challenge.findFirst({
@@ -187,6 +196,9 @@ export async function completeChallenge() {
 
   // Get or create user in database
   const user = await getOrCreateUser();
+  if (!user) {
+    throw new Error('Unable to create user. Please try signing in again.');
+  }
 
   // Get active challenge
   const challenge = await prisma.challenge.findFirst({
@@ -246,6 +258,9 @@ export async function getLatestPersona() {
   let user;
   try {
     user = await getOrCreateUser();
+    if (!user) {
+      return null;
+    }
   } catch {
     return null;
   }
