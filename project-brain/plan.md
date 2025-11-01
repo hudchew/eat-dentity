@@ -830,11 +830,11 @@ module.exports = withPWA({});
 - [ ] Export Activity Log
 
 #### 9.10 Security & Audit
-- [ ] Role-based Access Control
 - [ ] Audit Trail (Log all actions)
 - [ ] IP Tracking
 - [ ] Session Timeout
 - [ ] CSRF Protection
+- [ ] All admins have full access (no role restrictions)
 
 ### Tech Stack
 - **Authentication:** NextAuth.js หรือ Custom JWT

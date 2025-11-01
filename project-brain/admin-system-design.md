@@ -16,7 +16,6 @@ model Admin {
   email     String   @unique
   password  String   // bcrypt hashed
   name      String
-  role      AdminRole @default(ADMIN)
   isActive  Boolean  @default(true)
   lastLogin DateTime?
   createdAt DateTime @default(now())
@@ -24,15 +23,9 @@ model Admin {
 
   @@map("admins")
 }
-
-enum AdminRole {
-  SUPER_ADMIN  // Full access, can manage other admins
-  ADMIN       // Standard admin access
-  MODERATOR   // Limited access (future: content moderation only)
-
-  @@map("admin_role")
-}
 ```
+
+**Note:** ทุก Admin เป็น SUPER_ADMIN (ไม่มีการแบ่ง role)
 
 ### 2. Admin Session (สำหรับ JWT/Session Management)
 
@@ -285,9 +278,9 @@ Tag: noodles
 - ✅ Rate limiting สำหรับ login
 
 ### 2. Authorization
-- ✅ Role-based access (SUPER_ADMIN, ADMIN, MODERATOR)
 - ✅ Route protection (middleware)
 - ✅ API route protection
+- ✅ All admins have full access (no role restrictions)
 
 ### 3. Audit Trail
 - ✅ Log ทุก action (AdminActivity model)
