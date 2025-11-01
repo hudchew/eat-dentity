@@ -54,18 +54,15 @@ export function ElementBars({ challenge }: ElementBarsProps) {
 
   if (elementsWithData.length === 0) {
     return (
-      <Card>
+      <Card className="border border-gray-200 bg-white rounded-3xl shadow-none">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="text-2xl">⚡</span>
-            <span>แถบพลังงาน Real-time</span>
-          </CardTitle>
+          <CardTitle className="text-gray-900">Food Stats</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-500 text-center py-4">
-            ยังไม่มีข้อมูลมื้ออาหาร
+          <p className="text-gray-500 text-center py-6">
+            No meals logged yet
             <br />
-            เริ่มบันทึกมื้ออาหารเพื่อดูสถิติ!
+            <span className="text-sm">Start logging to see your stats</span>
           </p>
         </CardContent>
       </Card>
@@ -73,27 +70,19 @@ export function ElementBars({ challenge }: ElementBarsProps) {
   }
 
   return (
-    <Card>
+    <Card className="border border-gray-200 bg-white rounded-3xl shadow-none">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <span className="text-2xl">⚡</span>
-          <span>แถบพลังงาน Real-time</span>
-        </CardTitle>
+        <CardTitle className="text-gray-900">Food Stats</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {elementsWithData.map((element) => {
           return (
             <div key={element.label} className="space-y-2">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">{element.emoji}</span>
-                  <span className="font-medium">{element.label}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary">{element.value}%</Badge>
-                </div>
+                <span className="font-medium text-gray-700">{element.label}</span>
+                <Badge variant="secondary" className="rounded-full">{element.value}%</Badge>
               </div>
-              <Progress value={element.value} className={`h-2 ${element.color}`} />
+              <Progress value={element.value} className={`h-3 rounded-full ${element.color}`} />
             </div>
           );
         })}

@@ -21,17 +21,17 @@ export function ChallengeProgress({ challenge }: ChallengeProgressProps) {
   const mealDays = new Set(challenge.meals.map((meal) => meal.dayNumber));
 
   return (
-    <Card>
+    <Card className="border border-gray-200 bg-white rounded-3xl shadow-none">
       <CardHeader>
-        <CardTitle>ความคืบหน้า Challenge</CardTitle>
+        <CardTitle className="text-gray-900">Challenge Progress</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium">วันที่ {currentDay} / {totalDays}</span>
-            <span className="text-sm text-gray-600">{Math.round(progress)}%</span>
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-sm font-medium text-gray-700">Day {currentDay} / {totalDays}</span>
+            <span className="text-sm text-gray-500">{Math.round(progress)}%</span>
           </div>
-          <Progress value={progress} className="h-3" />
+          <Progress value={progress} className="h-3 rounded-full" />
         </div>
 
         {/* Day Indicators */}
@@ -46,11 +46,11 @@ export function ChallengeProgress({ challenge }: ChallengeProgressProps) {
               <div
                 key={day}
                 className={`
-                  aspect-square rounded-lg flex items-center justify-center text-sm font-semibold
-                  ${hasMeals && isCompleted ? 'bg-green-500 text-white' : isCompleted ? 'bg-gray-300 text-gray-600' : 'bg-gray-200 text-gray-500'}
-                  ${isCurrent ? 'ring-2 ring-orange-500 ring-offset-2' : ''}
+                  aspect-square rounded-2xl flex items-center justify-center text-sm font-semibold transition-all
+                  ${hasMeals && isCompleted ? 'bg-blue-600 text-white' : isCompleted ? 'bg-gray-200 text-gray-600' : 'bg-gray-100 text-gray-400'}
+                  ${isCurrent ? 'ring-2 ring-blue-400 ring-offset-2' : ''}
                 `}
-                title={hasMeals ? `วันที่ ${day}: มีการบันทึกมื้ออาหาร` : `วันที่ ${day}`}
+                title={hasMeals ? `Day ${day}: Logged` : `Day ${day}`}
               >
                 {hasMeals && isCompleted ? '✓' : day}
               </div>
@@ -58,7 +58,7 @@ export function ChallengeProgress({ challenge }: ChallengeProgressProps) {
           })}
         </div>
         <p className="text-xs text-gray-500 mt-2">
-          มีการบันทึก {challenge.meals.length} มื้ออาหาร
+          {challenge.meals.length} meals logged
         </p>
       </CardContent>
     </Card>

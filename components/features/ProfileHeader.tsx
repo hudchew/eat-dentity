@@ -41,9 +41,9 @@ export async function ProfileHeader() {
     <Card className="border-2">
       <CardContent className="p-6">
         <div className="flex flex-col sm:flex-row items-center gap-6">
-          <Avatar className="w-24 h-24 border-4 border-orange-400">
+          <Avatar className="w-24 h-24 border-4 border-gray-200">
             <AvatarImage src={imageUrl} alt={name} />
-            <AvatarFallback className="text-2xl bg-orange-400 text-white">
+            <AvatarFallback className="text-2xl bg-gray-200 text-white">
               {initials}
             </AvatarFallback>
           </Avatar>

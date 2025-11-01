@@ -20,17 +20,14 @@ export function DailyChallenge({ challenge }: DailyChallengeProps) {
   const challengeText = getDailyChallenge();
 
   return (
-    <Card className="border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-pink-50">
+    <Card className="border border-gray-200 bg-gradient-to-br from-blue-50 to-white rounded-3xl shadow-none">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <span className="text-2xl">🎯</span>
-          <span>Daily Challenge</span>
-        </CardTitle>
+        <CardTitle className="text-gray-900">Daily Challenge</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-lg leading-relaxed">{challengeText}</p>
+        <p className="text-lg leading-relaxed text-gray-700">{challengeText}</p>
         {challenge && (
-          <p className="text-sm text-gray-600 mt-2">วันที่ {currentDay} / 7</p>
+          <p className="text-sm text-gray-500 mt-3">Day {currentDay} of 7</p>
         )}
       </CardContent>
     </Card>

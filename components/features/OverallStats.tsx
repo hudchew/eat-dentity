@@ -109,7 +109,7 @@ export async function OverallStats() {
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg">
             <div className="text-3xl font-bold text-orange-600">{stats.totalChallenges}</div>
             <div className="text-sm text-gray-600 mt-1">Challenges</div>

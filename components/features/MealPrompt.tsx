@@ -22,16 +22,13 @@ export function MealPrompt({ challenge }: MealPromptProps) {
   }
 
   return (
-    <Card className="border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50">
-      <CardContent className="p-4 md:p-5 flex items-center gap-3">
-        <div className="text-2xl md:text-3xl" aria-hidden>
-          {prompt.emoji}
-        </div>
+    <Card className="border border-gray-200 bg-gradient-to-r from-gray-50 to-white rounded-3xl shadow-none">
+      <CardContent className="p-5 md:p-6">
         <div className="leading-tight">
-          <p className="text-base md:text-lg font-semibold">{prompt.title}</p>
-          <p className="text-sm text-gray-600">
+          <p className="text-lg md:text-xl font-semibold text-gray-900">{prompt.title}</p>
+          <p className="text-sm md:text-base text-gray-500 mt-1">
             {prompt.subtitle}
-            {todayCount > 0 ? ` • วันนี้บันทึกแล้ว ${todayCount} มื้อ` : ''}
+            {todayCount > 0 ? ` • Logged ${todayCount} meal${todayCount > 1 ? 's' : ''} today` : ''}
           </p>
         </div>
       </CardContent>

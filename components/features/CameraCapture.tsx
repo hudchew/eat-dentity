@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { uploadImage } from '@/lib/actions/upload';
@@ -14,8 +14,19 @@ export function CameraCapture({ onUploaded }: CameraCaptureProps) {
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selectedFileRef = useRef<File | null>(null);
+
+  // Detect if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+      setIsMobile(isMobileDevice);
+    };
+    checkMobile();
+  }, []);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -61,8 +72,31 @@ export function CameraCapture({ onUploaded }: CameraCaptureProps) {
     }
   };
 
-  const handleCapture = () => {
-    fileInputRef.current?.click();
+  const handleCapture = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    
+    // Ensure input element exists
+    if (!fileInputRef.current) {
+      console.error('File input ref is not available');
+      setError('Camera not available. Please try again.');
+      return;
+    }
+
+    // Check if input is disabled
+    if (fileInputRef.current.disabled) {
+      console.error('File input is disabled');
+      return;
+    }
+
+    // Trigger click programmatically
+    try {
+      console.log('handleCapture', fileInputRef.current);
+      fileInputRef.current.click();
+    } catch (err) {
+      console.error('Failed to trigger file input:', err);
+      setError('Failed to open camera. Please check permissions.');
+    }
   };
 
   const handleRemove = () => {
@@ -78,73 +112,86 @@ export function CameraCapture({ onUploaded }: CameraCaptureProps) {
   const displayUrl = uploadedUrl || previewUrl;
 
   return (
-    <Card className="border-2">
-      <CardContent className="p-6 space-y-4">
-        <h3 className="text-xl font-semibold">ถ่ายรูปอาหาร</h3>
+    <div className="space-y-4">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-2xl">
+          <p className="text-sm">{error}</p>
+        </div>
+      )}
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            <p className="text-sm">❌ {error}</p>
-          </div>
-        )}
-
-        {displayUrl ? (
-          <div className="space-y-4">
-            <div className="relative w-full aspect-video rounded-lg overflow-hidden border-2 border-gray-200">
-              <img
-                src={displayUrl}
-                alt="Captured meal"
-                className="w-full h-full object-cover"
-              />
-              {isUploading && (
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                  <div className="text-white text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
-                    <p className="text-sm">กำลังอัปโหลด...</p>
-                  </div>
+      {displayUrl ? (
+        <div className="space-y-4">
+          {/* Photo Preview */}
+          <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden bg-gray-100 shadow-lg">
+            <img
+              src={displayUrl}
+              alt="Captured meal"
+              className="w-full h-full object-cover"
+            />
+            {isUploading && (
+              <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
+                <div className="text-white text-center">
+                  <div className="animate-spin rounded-full h-10 w-10 border-4 border-white border-t-transparent mx-auto mb-2"></div>
+                  <p className="text-sm font-medium">Uploading...</p>
                 </div>
-              )}
-              {uploadedUrl && !isUploading && (
-                <div className="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  ✓ อัปโหลดสำเร็จ
-                </div>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Button onClick={handleRemove} variant="outline" className="flex-1" disabled={isUploading}>
-                🗑️ ลบรูป
-              </Button>
-              <Button onClick={handleCapture} variant="outline" className="flex-1" disabled={isUploading}>
-                📸 ถ่ายใหม่
-              </Button>
-              {previewUrl && !uploadedUrl && !isUploading && (
-                <Button onClick={() => handleUpload()} className="flex-1" disabled={isUploading}>
-                  ☁️ อัปโหลด
-                </Button>
-              )}
-            </div>
+              </div>
+            )}
+            {uploadedUrl && !isUploading && (
+              <div className="absolute top-3 right-3 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
+                ✓ Uploaded
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-            <div className="text-6xl mb-4">📸</div>
-            <p className="text-gray-600 mb-4">ยังไม่มีรูปภาพ</p>
-            <Button onClick={handleCapture} size="lg" disabled={isUploading}>
-              📷 ถ่ายรูป / เลือกไฟล์
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <Button 
+              type="button"
+              onClick={handleRemove} 
+              variant="outline" 
+              className="flex-1" 
+              disabled={isUploading}
+            >
+              Remove
+            </Button>
+            <Button 
+              type="button"
+              onClick={handleCapture} 
+              variant="outline" 
+              className="flex-1" 
+              disabled={isUploading}
+            >
+              Retake
             </Button>
           </div>
-        )}
+        </div>
+      ) : (
+        <div className="border-2 border-dashed border-gray-300 rounded-3xl p-12 text-center bg-white">
+          <div className="text-6xl mb-4">📸</div>
+          <p className="text-gray-600 mb-6 text-sm font-medium">No photo yet</p>
+          <Button 
+            type="button"
+            onClick={handleCapture} 
+            size="lg" 
+            disabled={isUploading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            Capture Photo
+          </Button>
+        </div>
+      )}
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          onChange={handleFileSelect}
-          className="hidden"
-          disabled={isUploading}
-        />
-      </CardContent>
-    </Card>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        {...(isMobile ? { capture: 'environment' as const } : {})}
+        onChange={handleFileSelect}
+        className="hidden"
+        disabled={isUploading}
+        aria-label="Upload image"
+        tabIndex={-1}
+      />
+    </div>
   );
 }
 

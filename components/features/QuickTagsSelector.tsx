@@ -36,11 +36,16 @@ export function QuickTagsSelector({ onTagsChange }: QuickTagsSelectorProps) {
   );
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-xl font-semibold">เลือกแท็กอาหาร</h3>
+    <div className="space-y-5">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900">Select Tags</h3>
+        <p className="text-xs text-gray-500 mt-1">
+          {selectedTags.length} tag{selectedTags.length !== 1 ? 's' : ''} selected
+        </p>
+      </div>
       {Object.entries(groupedTags).map(([category, tags]) => (
         <div key={category} className="space-y-2">
-          <h4 className="text-sm font-medium text-gray-700">
+          <h4 className="text-xs font-medium text-gray-600 uppercase tracking-wide">
             {TAG_CATEGORIES[category as keyof typeof TAG_CATEGORIES]}
           </h4>
           <div className="flex flex-wrap gap-2">
@@ -53,12 +58,11 @@ export function QuickTagsSelector({ onTagsChange }: QuickTagsSelectorProps) {
                   size="sm"
                   onClick={() => toggleTag(tag.id)}
                   className={`
-                    ${isSelected ? tag.color : ''}
-                    ${isSelected ? 'text-white border-2' : ''}
+                    rounded-full px-4
+                    ${isSelected ? tag.color + ' text-white border-0 shadow-md' : 'bg-gray-50 hover:bg-gray-100'}
                     transition-all
                   `}
                 >
-                  <span className="mr-2">{tag.emoji}</span>
                   {tag.name}
                 </Button>
               );
@@ -66,9 +70,6 @@ export function QuickTagsSelector({ onTagsChange }: QuickTagsSelectorProps) {
           </div>
         </div>
       ))}
-      <p className="text-sm text-gray-500">
-        เลือกได้หลายแท็กต่อ 1 มื้ออาหาร ({selectedTags.length} แท็กที่เลือก)
-      </p>
     </div>
   );
 }

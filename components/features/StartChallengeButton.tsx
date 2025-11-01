@@ -30,11 +30,11 @@ export function StartChallengeButton() {
     <div className="space-y-2">
       <Button 
         size="lg" 
-        className="text-lg px-8 py-6 h-auto"
+        className="text-xl px-12 py-7 h-auto bg-blue-600 hover:bg-blue-700 rounded-full font-semibold"
         onClick={handleStart}
         disabled={isLoading}
       >
-        {isLoading ? '⏳ กำลังสร้าง Challenge...' : '🚀 เริ่มต้น 7-Day Challenge'}
+        {isLoading ? 'Starting...' : 'Start 7-Day Challenge'}
       </Button>
       {error && (
         <p className="text-sm text-red-600">{error}</p>
