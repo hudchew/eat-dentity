@@ -1,12 +1,15 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { getActiveChallenge } from '@/lib/actions/challenge';
 import { getMealPrompt } from '@/lib/utils/meal-period';
+import type { Challenge, Meal } from '@prisma/client';
 
-export async function MealPrompt() {
+interface MealPromptProps {
+  challenge?: Challenge & { meals: Meal[] };
+}
+
+export function MealPrompt({ challenge }: MealPromptProps) {
   const prompt = getMealPrompt();
 
   // Try to fetch today's meals count (optional UI hint)
-  const challenge = await getActiveChallenge();
   let todayCount = 0;
   if (challenge) {
     const now = new Date();

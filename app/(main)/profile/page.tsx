@@ -3,8 +3,21 @@ import { ChallengeHistory } from '@/components/features/ChallengeHistory';
 import { PersonaCollection } from '@/components/features/PersonaCollection';
 import { OverallStats } from '@/components/features/OverallStats';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Suspense } from 'react';
 
 export const dynamic = 'force-dynamic';
+
+function StatsSkeleton() {
+  return <div className="h-96 bg-gray-100 rounded-lg animate-pulse" />;
+}
+
+function HistorySkeleton() {
+  return <div className="h-96 bg-gray-100 rounded-lg animate-pulse" />;
+}
+
+function CollectionSkeleton() {
+  return <div className="h-96 bg-gray-100 rounded-lg animate-pulse" />;
+}
 
 export default function ProfilePage() {
   return (
@@ -15,7 +28,9 @@ export default function ProfilePage() {
           <p className="text-gray-600">ข้อมูลและประวัติของคุณ</p>
         </div>
 
-        <ProfileHeader />
+        <Suspense fallback={<div className="h-32 bg-gray-100 rounded-lg animate-pulse" />}>
+          <ProfileHeader />
+        </Suspense>
 
         {/* Tabs for organized content */}
         <Tabs defaultValue="stats" className="w-full">
@@ -26,15 +41,21 @@ export default function ProfilePage() {
           </TabsList>
 
           <TabsContent value="stats" className="space-y-6">
-            <OverallStats />
+            <Suspense fallback={<StatsSkeleton />}>
+              <OverallStats />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="history" className="space-y-6">
-            <ChallengeHistory />
+            <Suspense fallback={<HistorySkeleton />}>
+              <ChallengeHistory />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="collection" className="space-y-6">
-            <PersonaCollection />
+            <Suspense fallback={<CollectionSkeleton />}>
+              <PersonaCollection />
+            </Suspense>
           </TabsContent>
         </Tabs>
       </div>

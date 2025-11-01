@@ -6,6 +6,7 @@ import { MealHistoryDialog } from '@/components/features/MealHistoryDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { getActiveChallenge } from '@/lib/actions/challenge';
 import { StartChallengeButton } from '@/components/features/StartChallengeButton';
 import { AnalyzePersonaButton } from '@/components/features/AnalyzePersonaButton';
@@ -50,10 +51,14 @@ export default async function DashboardPage() {
         {challenge && (
           <>
             {/* Time-based meal prompt */}
-            <MealPrompt />
+            <Suspense fallback={<div className="h-32 bg-gray-100 rounded-lg animate-pulse" />}>
+              <MealPrompt challenge={challenge} />
+            </Suspense>
 
             {/* Daily Challenge */}
-            <DailyChallenge />
+            <Suspense fallback={<div className="h-40 bg-gray-100 rounded-lg animate-pulse" />}>
+              <DailyChallenge challenge={challenge} />
+            </Suspense>
 
             {/* Grid Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

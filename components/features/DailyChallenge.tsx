@@ -1,16 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getActiveChallenge } from '@/lib/actions/challenge';
 import { getDailyChallenge } from '@/lib/constants/daily-challenges';
+import type { Challenge } from '@prisma/client';
 
-export async function DailyChallenge() {
-  // Get challenge to calculate current day
-  const challenge = await getActiveChallenge();
-  
+interface DailyChallengeProps {
+  challenge?: Challenge;
+}
+
+export function DailyChallenge({ challenge }: DailyChallengeProps) {
   // Calculate current day
   let currentDay = 1;
   if (challenge) {
     const now = new Date();
-    const diffTime = now.getTime() - challenge.startDate.getTime();
+    const diffTime = now.getTime() - new Date(challenge.startDate).getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
     currentDay = Math.min(Math.max(diffDays, 1), 7);
   }
