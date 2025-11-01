@@ -1,6 +1,8 @@
 import { ProfileHeader } from '@/components/features/ProfileHeader';
 import { ChallengeHistory } from '@/components/features/ChallengeHistory';
 import { PersonaCollection } from '@/components/features/PersonaCollection';
+import { OverallStats } from '@/components/features/OverallStats';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function ProfilePage() {
   return (
@@ -12,8 +14,27 @@ export default function ProfilePage() {
         </div>
 
         <ProfileHeader />
-        <ChallengeHistory />
-        <PersonaCollection />
+
+        {/* Tabs for organized content */}
+        <Tabs defaultValue="stats" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="stats">📊 สถิติ</TabsTrigger>
+            <TabsTrigger value="history">📜 ประวัติ</TabsTrigger>
+            <TabsTrigger value="collection">🎴 คอลเลกชัน</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="stats" className="space-y-6">
+            <OverallStats />
+          </TabsContent>
+
+          <TabsContent value="history" className="space-y-6">
+            <ChallengeHistory />
+          </TabsContent>
+
+          <TabsContent value="collection" className="space-y-6">
+            <PersonaCollection />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

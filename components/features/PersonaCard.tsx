@@ -1,9 +1,28 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Persona } from '@/lib/mock-data';
 
 interface PersonaCardProps {
-  persona: Persona;
+  persona: {
+    id: string;
+    title: string;
+    subtitle: string;
+    emoji: string;
+    description: string;
+    stats: {
+      fried: number;
+      vegetables: number;
+      meat: number;
+      carbs: number;
+      dessert: number;
+      coffee: number;
+    };
+    powers: {
+      attack: { label: string; value: string; emoji: string };
+      defense: { label: string; value: string; emoji: string };
+      speed: { label: string; value: string; emoji: string };
+    };
+    aiInsight: string;
+  };
 }
 
 export function PersonaCard({ persona }: PersonaCardProps) {

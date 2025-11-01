@@ -46,6 +46,9 @@ next-env.d.ts
 
 # AI
 .cursor/
+.playwright-mcp/
 project-brain/
 # clerk configuration (can include secrets)
-/.clerk/
+/.clerk/**/public/sw.js
+**/public/workbox-*.js
+**/public/worker-*.js
