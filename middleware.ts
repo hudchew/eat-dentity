@@ -6,6 +6,8 @@ const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/api/webhooks/clerk', // Webhook endpoint (no auth needed)
+  '/manifest.json', // PWA manifest (no auth needed)
+  '/icons(.*)', // PWA icons (no auth needed)
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
